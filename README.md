@@ -12,7 +12,7 @@ mvn assembly:assembly
 ```
 Load data from the Social Security page and output to the console:
 ``` shell
-java -jar -DoutputWriter=simple -DappConfigFilename=myconfiguration.properties target/EnpleguDatuakJava-1.0-SNAPSHOT-jar-with-dependencies.jar ssInet
+java -jar target/EnpleguDatuakJava-1.0-SNAPSHOT-jar-with-dependencies.jar -t ss -c myconfiguration.properties
 ```
 
 Demo: http://gorbeia.github.io/EnpleguDatuakJS/
