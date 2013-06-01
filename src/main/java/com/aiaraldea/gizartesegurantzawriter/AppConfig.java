@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,16 +16,21 @@ import java.util.logging.Logger;
  */
 public class AppConfig {
 
-    private MongoDBUtil.MongoDBConfig mongoDBConfig;
+    private static MongoDBUtil.MongoDBConfig mongoDBConfig;
     protected static final String PROPERTY_NAME = "appConfigFilename";
-    private String readFilesPath;
+    private static String readFilesPath;
+    private static String outputWriter;
+    private static List<String> filePaths;
 
-    public AppConfig() {
+    public static void init() {
+        init(null);
+    }
+
+    public static void init(String configFilename) {
         try {
             InputStream configStream;
-            String configFilename = System.getProperty(PROPERTY_NAME);
             if (configFilename == null) {
-                configStream = this.getClass().getResourceAsStream("/configuration.properties");
+                configStream = AppConfig.class.getResourceAsStream("/configuration.properties");
             } else {
                 try {
                     configStream = new FileInputStream(configFilename);
@@ -43,11 +49,27 @@ public class AppConfig {
         }
     }
 
-    public MongoDBUtil.MongoDBConfig getMongoDBConfig() {
+    public static MongoDBUtil.MongoDBConfig getMongoDBConfig() {
         return mongoDBConfig;
     }
 
-    public String getReadFilesPath() {
+    public static String getReadFilesPath() {
         return readFilesPath;
+    }
+
+    public static void setFilePaths(List<String> filePaths) {
+        AppConfig.filePaths = filePaths;
+    }
+
+    public static List<String> getFilePaths() {
+        return filePaths;
+    }
+
+    public static String getOutputWriter() {
+        return outputWriter;
+    }
+
+    public static void setOutputWriter(String outputWriter) {
+        AppConfig.outputWriter = outputWriter;
     }
 }

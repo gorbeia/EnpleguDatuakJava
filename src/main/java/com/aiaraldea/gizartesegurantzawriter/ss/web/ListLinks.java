@@ -83,8 +83,7 @@ public class ListLinks {
     }
 
     public static void fetchUnfetchedFiles(Collection<String> urls, SSLastDayOfMonthByCouncilParser parser) throws IOException {
-        AppConfig config = new AppConfig();
-        String readFilesPath = config.getReadFilesPath();
+        String readFilesPath = AppConfig.getReadFilesPath();
         Collection<String> readFiles = new ArrayList<>();
 
         ObjectMapper mapper = new ObjectMapper();

@@ -1,5 +1,6 @@
 package com.aiaraldea.gizartesegurantzawriter.writer;
 
+import com.aiaraldea.gizartesegurantzawriter.AppConfig;
 import junit.framework.TestCase;
 
 /**
@@ -34,7 +35,7 @@ public class OutputWriterFactoryTest extends TestCase {
 
     public void testGetOutputWriterSimple() {
         System.out.println("getOutputWriter");
-        System.setProperty(OutputWriterFactory.PROPERTY_NAME, OutputWriterFactory.PROPERTY_VALUE_SIMPLE);
+        AppConfig.setOutputWriter(OutputWriterFactory.PROPERTY_VALUE_SIMPLE);
         String collectionName = "dummy";
         OutputWriter result = OutputWriterFactory.getOutputWriter(collectionName);
         assertEquals(SimpleOutputWriter.class, result.getClass());

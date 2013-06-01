@@ -19,8 +19,8 @@ public class AppConfigTest extends TestCase {
      */
     public void testGetMongoDBConfig() {
         System.out.println("getMongoDBConfig");
-        AppConfig instance = new AppConfig();
-        MongoDBUtil.MongoDBConfig result = instance.getMongoDBConfig();
+        AppConfig.init();
+        MongoDBUtil.MongoDBConfig result = AppConfig.getMongoDBConfig();
         assertEquals("dataBaseName", result.getDataBaseName());
         assertEquals(111, result.getPort());
         assertEquals("mongodb.url", result.getUrl());
@@ -32,9 +32,8 @@ public class AppConfigTest extends TestCase {
         
         URL url = this.getClass().getResource("/testConfiguration.properties");
         
-        System.setProperty(AppConfig.PROPERTY_NAME, url.getPath());
-        AppConfig instance = new AppConfig();
-        MongoDBUtil.MongoDBConfig result = instance.getMongoDBConfig();
+        AppConfig.init(url.getPath());
+        MongoDBUtil.MongoDBConfig result = AppConfig.getMongoDBConfig();
         assertEquals("dataBaseName.test", result.getDataBaseName());
         assertEquals(222, result.getPort());
         assertEquals("mongodb.url.test", result.getUrl());

@@ -32,8 +32,7 @@ public class MongoDBWriter implements OutputWriter {
 
     private void init() {
         if (coll == null) {
-            AppConfig appConfig = new AppConfig();
-            mongoDBUtil = new MongoDBUtil(appConfig.getMongoDBConfig());
+            mongoDBUtil = new MongoDBUtil(AppConfig.getMongoDBConfig());
             mongoDBUtil.authenticate();
             coll = mongoDBUtil.getCollection(collectionName);
         }

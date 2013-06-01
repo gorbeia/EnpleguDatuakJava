@@ -11,9 +11,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.MissingOptionException;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 /**
@@ -22,17 +31,76 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
  */
 public class App {
 
-    public static void main(String[] args) throws FileNotFoundException, IOException, InvalidFormatException {
-        String action = args[0];
-        switch (action) {
+    public static void main(String[] args) throws FileNotFoundException, IOException, InvalidFormatException, ParseException {
+        // create Options object
+        Options options = new Options();
+        // add t option
+
+        options.addOption(
+                OptionBuilder.withLongOpt("type").
+                withArgName("type").
+                withDescription("Operation type. It can be 'ss' or 'sepe'").
+                hasArg().
+                isRequired().
+                create("t"));
+        options.addOption(
+                OptionBuilder.withLongOpt("files").
+                withArgName("files").
+                withDescription("Input files").
+                hasArgs().
+                create("f"));
+        options.addOption(
+                OptionBuilder.withLongOpt("database").
+                withDescription("Insert in the database specified in the configuration file").
+                create("b"));
+        options.addOption(
+                OptionBuilder.withLongOpt("configuration").
+                withArgName("configuration").
+                withDescription("Configuration file").
+                hasArg().
+                isRequired().
+                create("c"));
+        options.addOption(
+                OptionBuilder.withLongOpt("help").
+                withDescription("Help").
+                create("h"));
+        CommandLine cmd;
+        try {
+            CommandLineParser parser = new PosixParser();
+            cmd = parser.parse(options, args);
+        } catch (MissingOptionException ex) {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("EnpleguDatuak -t <action> -c <configuration file>", ex.getLocalizedMessage(), options, null);
+            System.exit(0);
+            return;
+        }
+        String configFile = cmd.getOptionValue("c");
+        AppConfig.init(configFile);
+
+        if (cmd.hasOption("f")) {
+            AppConfig.setFilePaths(Arrays.asList(cmd.getOptionValues("f")));
+        }
+        if (cmd.hasOption("b")) {
+            AppConfig.setOutputWriter("mongo");
+        } else {
+            AppConfig.setOutputWriter(OutputWriterFactory.PROPERTY_VALUE_SIMPLE);
+        }
+
+        switch (cmd.getOptionValue("t")) {
             case "councils":
                 loadCouncils(args);
                 break;
-            case "ssInet":
-                loadSSDataInet();
+            case "ss":
+                if (cmd.hasOption("f")) {
+                    loadSSDAta();
+                } else {
+                    loadSSDataInet();
+                }
+                break;
+            case "sepe":
                 break;
             default:
-                loadSSDAta(args);
+                loadSSDAta();
                 break;
         }
     }
@@ -52,10 +120,9 @@ public class App {
         writer.flush();
     }
 
-    public static void loadSSDAta(String[] args) throws FileNotFoundException, IOException, InvalidFormatException {
+    public static void loadSSDAta() throws FileNotFoundException, IOException, InvalidFormatException {
         OutputWriter writer = OutputWriterFactory.getOutputWriter("SSLastDayOfMonthByCouncil");
-        for (int i = 1; i < args.length; i++) {
-            String string = args[i];
+        for (String string : AppConfig.getFilePaths()) {
             FileInputStream file = new FileInputStream(new File(string));
             Set<SSEntry> parsed = new SSLastDayOfMonthByCouncilParser().parse(file);
             Iterator<SSEntry> iterator = parsed.iterator();
@@ -71,9 +138,7 @@ public class App {
     private static void loadCouncils(String[] args) throws FileNotFoundException, IOException, InvalidFormatException {
         System.out.println("loadCouncils");
         OutputWriter writer = OutputWriterFactory.getOutputWriter("IneCouncils");
-        for (int i = 1; i < args.length; i++) {
-            System.out.println(i);
-            String string = args[i];
+        for (String string : AppConfig.getFilePaths()) {
             FileInputStream file = new FileInputStream(new File(string));
             Set<Council> parsed = IneCouncilParser.parse(file);
             Iterator<Council> iterator = parsed.iterator();
