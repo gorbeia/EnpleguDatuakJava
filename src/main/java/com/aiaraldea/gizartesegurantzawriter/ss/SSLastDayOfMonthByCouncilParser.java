@@ -50,7 +50,7 @@ public class SSLastDayOfMonthByCouncilParser {
                     SSEntry entry = new SSEntry();
                     entry.setYear(Integer.parseInt(year));
                     entry.setMonth(Months.months.get(month));
-                    entry.setCouncilCode(code);
+                    entry.setIneCode(code);
 //                    entry.setCouncilName(name);
                     entry.setGeneral(parseCell(row, cd.generalColumn));
                     entry.setAgrario(parseCell(row, cd.farmingColumn));

@@ -6,14 +6,18 @@ import com.aiaraldea.gizartesegurantzawriter.ss.SSEntry;
 import com.aiaraldea.gizartesegurantzawriter.ss.SSLastDayOfMonthByCouncilParser;
 import com.aiaraldea.gizartesegurantzawriter.councils.IneCouncilParser;
 import com.aiaraldea.gizartesegurantzawriter.councils.Council;
+import com.aiaraldea.gizartesegurantzawriter.sepe.SepeLoader;
 import com.aiaraldea.gizartesegurantzawriter.ss.web.ListLinks;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -88,7 +92,10 @@ public class App {
 
         switch (cmd.getOptionValue("t")) {
             case "councils":
-                loadCouncils(args);
+                loadCouncils();
+                break;
+            case "councilsMap":
+                loadCouncilsMap();
                 break;
             case "ss":
                 if (cmd.hasOption("f")) {
@@ -98,6 +105,11 @@ public class App {
                 }
                 break;
             case "sepe":
+                if (cmd.hasOption("f")) {
+                    SepeLoader.loadSepeData();
+                } else {
+                    SepeLoader.loadSepeDataInet();
+                }
                 break;
             default:
                 loadSSDAta();
@@ -116,7 +128,7 @@ public class App {
             SSEntry sSEntry = iterator.next();
             writer.write(sSEntry);
         }
-//            System.out.println("Inserting " + string);
+//            System.err.println("Inserting " + string);
         writer.flush();
     }
 
@@ -130,13 +142,18 @@ public class App {
                 SSEntry sSEntry = iterator.next();
                 writer.write(sSEntry);
             }
-//            System.out.println("Inserting " + string);
+//            System.err.println("Inserting " + string);
             writer.flush();
         }
     }
 
-    private static void loadCouncils(String[] args) throws FileNotFoundException, IOException, InvalidFormatException {
-        System.out.println("loadCouncils");
+    private static void loadCouncils() throws FileNotFoundException, IOException, InvalidFormatException {
+        System.err.println("loadCouncils");
+        if (AppConfig.getFilePaths() == null) {
+            throw new IllegalArgumentException(
+                    "The file is mandatory to load the councils. "
+                    + "Load form the web page is not implemented");
+        }
         OutputWriter writer = OutputWriterFactory.getOutputWriter("IneCouncils");
         for (String string : AppConfig.getFilePaths()) {
             FileInputStream file = new FileInputStream(new File(string));
@@ -146,8 +163,49 @@ public class App {
                 Council entry = iterator.next();
                 writer.write(entry);
             }
-//            System.out.println("Inserting " + string);
+//            System.err.println("Inserting " + string);
             writer.flush();
+        }
+    }
+
+    private static void loadCouncilsMap() throws FileNotFoundException, IOException, InvalidFormatException {
+        System.err.println("loadCouncilsMap");
+        if (AppConfig.getFilePaths() == null) {
+            throw new IllegalArgumentException(
+                    "The file is mandatory to load the councils. "
+                    + "Load form the web page is not implemented");
+        }
+        OutputWriter writer = OutputWriterFactory.getOutputWriter("IneCouncils");
+        Map<String, String> councilMap = new HashMap<>();
+        for (String string : AppConfig.getFilePaths()) {
+            FileInputStream file = new FileInputStream(new File(string));
+            Set<Council> parsed = IneCouncilParser.parse(file);
+            Iterator<Council> iterator = parsed.iterator();
+            while (iterator.hasNext()) {
+                Council entry = iterator.next();
+
+                String normalized = Normalizer.normalize(entry.getIneName(), Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "").toLowerCase();
+                councilMap.put(
+                        normalized,
+                        entry.getIneCode());
+
+                if (normalized.contains("/")) {
+                    String[] split = normalized.split("/");
+                    for (String string1 : split) {
+                        councilMap.put(
+                                string1,
+                                entry.getIneCode());
+                    }
+                }
+                normalized = Normalizer.normalize(entry.getName(), Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "").toLowerCase();
+                councilMap.put(
+                        normalized,
+                        entry.getIneCode());
+            }
+//            System.err.println("Inserting " + string);
+            writer.write(councilMap);
+            writer.flush();
+            councilMap.clear();
         }
     }
 }

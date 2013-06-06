@@ -1,19 +1,13 @@
 package com.aiaraldea.gizartesegurantzawriter.ss;
 
-import java.util.Formatter;
+import com.aiaraldea.gizartesegurantzawriter.sepe.MonthlyData;
 
 /**
  *
  * @author inaki
  */
-public class SSEntry {
+public class SSEntry extends MonthlyData {
 
-    private int year;
-    private int month;
-//    private String provinceCode;
-//    private String provinceName;
-    private String councilCode;
-//    private String councilName;
     private int general;
     private int agrario;
     private int mar;
@@ -21,51 +15,6 @@ public class SSEntry {
     private int autonomos;
     private int carbon;
     private int total;
-
-    public int getYear() {
-        return year;
-    }
-
-    public void setYear(int year) {
-        if (year < 1900 || year > 2100) {
-            throw new RuntimeException("Wrong yeaar");
-        }
-        this.year = year;
-    }
-
-    public int getMonth() {
-        return month;
-    }
-
-    public void setMonth(int month) {
-        if (month > 12 || month == 0) {
-            throw new RuntimeException("Wrong month");
-        }
-        this.month = month;
-    }
-
-    public String getYearMonth() {
-        StringBuilder sb = new StringBuilder();
-        Formatter formatter = new Formatter(sb);
-        formatter.format("%02d", month);
-        return year + "/" + sb.toString();
-    }
-
-    public String getCouncilCode() {
-        return councilCode;
-    }
-
-    public void setCouncilCode(String councilCode) {
-        this.councilCode = councilCode;
-    }
-
-//    public String getCouncilName() {
-//        return councilName;
-//    }
-//
-//    public void setCouncilName(String councilName) {
-//        this.councilName = councilName;
-//    }
 
     public int getGeneral() {
         return general;

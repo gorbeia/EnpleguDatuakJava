@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public class Months {
 
-    public static final Map<String, Integer> months = new HashMap<String, Integer>();
+    public static final Map<String, Integer> months = new HashMap<>();
 
     static {
         months.put("ENERO", 1);

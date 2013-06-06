@@ -43,7 +43,7 @@ public class MongoDBWriter implements OutputWriter {
         init();
         try {
             String jsonOutput = writer.writeValueAsString(o);
-//            System.out.println(jsonOutput);
+//            System.err.println(jsonOutput);
             DBObject document = (DBObject) JSON.parse(jsonOutput);
             documents.add(document);
         } catch (IOException ex) {

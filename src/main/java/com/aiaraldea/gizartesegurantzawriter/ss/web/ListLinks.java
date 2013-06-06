@@ -49,7 +49,7 @@ public class ListLinks {
     }
 
     private static void print(String msg, Object... args) {
-        System.out.println(String.format(msg, args));
+        System.err.println(String.format(msg, args));
     }
 
     private static String trim(String s, int width) {
@@ -65,10 +65,10 @@ public class ListLinks {
         for (String url : urls) {
             try {
                 //Open a URL Stream
-                System.out.println("dowwnloading " + url);
+                System.err.println("dowwnloading " + url);
                 Response resultImageResponse = Jsoup.connect(url).ignoreContentType(true).execute();
-                System.out.println("contentType: " + resultImageResponse.contentType());
-                System.out.println("Content-disposition: " + resultImageResponse.header("Content-disposition"));
+                System.err.println("contentType: " + resultImageResponse.contentType());
+                System.err.println("Content-disposition: " + resultImageResponse.header("Content-disposition"));
                 String[] split = resultImageResponse.header("Content-disposition").split("\"");
                 if (split.length > 1) {
                     try (FileOutputStream out = new FileOutputStream(new java.io.File("/tmp/" + split[1]))) {
@@ -108,7 +108,7 @@ public class ListLinks {
         try {
             for (String url : urls) {
                 //Open a URL Stream
-                System.out.println("dowwnloading " + url);
+                System.err.println("dowwnloading " + url);
                 Response resultImageResponse = Jsoup.connect(url).ignoreContentType(true).execute();
                 String[] split = resultImageResponse.header("Content-disposition").split("\"");
                 if (split.length > 1) {

@@ -4,7 +4,7 @@ package com.aiaraldea.gizartesegurantzawriter.sepe;
  *
  * @author inaki
  */
-public class MunicipalityData {
+public class MunicipalityData extends MonthlyData {
 
     private String municipality;
     private double total;
